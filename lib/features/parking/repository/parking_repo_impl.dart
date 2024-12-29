@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart';
 import 'package:get/get.dart';
+import 'package:security_project/features/parking/models/calculate_cost_model.dart';
+import 'package:security_project/features/parking/models/process_payment_model.dart';
+import 'package:security_project/features/parking/models/public_key_model.dart';
 import 'package:security_project/features/parking/models/reverse_parking_model.dart';
 import 'package:security_project/features/parking/repository/parking_repo.dart';
 import 'package:security_project/utils/api/dio_helper.dart';
@@ -22,9 +25,39 @@ class ParkingRepoImpl implements ParkingRepo{
     final encrypter = Encrypter(AES(key, mode: AESMode.cbc));
     final encryptedData = encrypter.encrypt(jsonEncode(parkingData), iv: iv);
     
-    return dioHelper.post(TApiConstants.reverseParking,token: token ,{
+    return dioHelper.post(TApiConstants.reverseParking, token: token,{
       'encryptedData': encryptedData.base64,
       'iv': base64Encode(iv.bytes),
+      //'parking_slot': 'A12',
+      //       'time': '2024-12-27 10:00',
     }).then((response) => ReverseParkingModel.fromJson(response));
+  }
+
+  @override
+  Future<PublicKeyModel> getPublicKey() async{
+    final dioHelper = TDioHelper();
+    return await dioHelper.get(TApiConstants.publicKey, token: token).then((response) => PublicKeyModel.fromJson(response));
+  }
+
+  @override
+  Future<CalculateCostModel> calculateCost({required int garageID}) async {
+    final dioHelper = TDioHelper();
+    return await dioHelper.get(TApiConstants.calculate, token: token, queryParameters: {'garage_id': garageID}).then((response) => CalculateCostModel.fromJson(response));
+  }
+
+  @override
+  Future<ProcessPaymentModel> processPayment({
+    required String encryptedSessionKey,
+    required String encryptedPaymentData,
+    required String iv,
+  }) async {
+    final dioHelper = TDioHelper();
+    return await dioHelper.post(TApiConstants.processPayment, token: token,
+        {
+          'encryptedSessionKey': encryptedSessionKey,
+          'encryptedPaymentData': encryptedPaymentData,
+          'iv': iv
+        },
+    ).then((response) => ProcessPaymentModel.fromJson(response));
   }
 }

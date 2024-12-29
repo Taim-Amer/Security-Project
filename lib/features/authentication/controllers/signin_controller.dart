@@ -31,11 +31,8 @@ class SigninController extends GetxController {
             password: passwordController.text);
         if (signinModel.value.status == true) {
           updateStatus(value: RequestState.success);
-          TCacheHelper.saveData(
-              key: "token", value: signinModel.value.accessToken);
-          TCacheHelper.saveData(
-              key: "userID", value: signinModel.value.userData!.id);
-          showSnackBar("Sign In Success", AlertState.success);
+          TCacheHelper.saveData(key: "token", value: signinModel.value.token);
+          showSnackBar( signinModel.value.message!, AlertState.success);
           // Get.offAllNamed(AppRoutes.home);
         }
       } catch (error) {

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:security_project/common/widgets/alerts/snackbar.dart';
 import 'package:security_project/features/authentication/models/signup_model.dart';
-import 'package:security_project/features/authentication/repositories/signup/repo_impl.dart';
+import 'package:security_project/features/authentication/repositories/auth_repo_impl.dart';
 import 'package:security_project/localization/keys.dart';
 import 'package:security_project/utils/constants/enums.dart';
 import 'package:security_project/utils/router/app_router.dart';
@@ -30,7 +30,7 @@ class SignupController extends GetxController{
     if (signupFormState.currentState!.validate()) {
       updateStatus(value: RequestState.loading);
       try {
-        signupModel.value = await SignupRepositoryImpl.instance.signup(
+        signupModel.value = await AuthRepositoryImpl.instance.signup(
           name: nameController.text,
           password: passwordController.text,
           phoneNumber: phoneNumberController.text,
@@ -40,10 +40,10 @@ class SignupController extends GetxController{
 
         if (signupModel.value.status == true) {
           updateStatus(value: RequestState.success);
-          showSnackBar(signupModel.value.response ?? "", AlertState.success);
+          showSnackBar(signupModel.value.message ?? "", AlertState.success);
           Get.toNamed(AppRoutes.signin);
         } else {
-          showSnackBar(signupModel.value.response ?? "", AlertState.error);
+          showSnackBar(signupModel.value.message ?? "", AlertState.error);
         }
       } catch (error) {
         updateStatus(value: RequestState.error);

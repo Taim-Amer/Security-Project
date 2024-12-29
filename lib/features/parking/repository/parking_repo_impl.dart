@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:encrypt/encrypt.dart';
 import 'package:get/get.dart';
 import 'package:security_project/features/parking/models/calculate_cost_model.dart';
+import 'package:security_project/features/parking/models/certificate_model.dart';
 import 'package:security_project/features/parking/models/process_payment_model.dart';
 import 'package:security_project/features/parking/models/public_key_model.dart';
 import 'package:security_project/features/parking/models/reverse_parking_model.dart';
+import 'package:security_project/features/parking/models/test_certificate_model.dart';
 import 'package:security_project/features/parking/repository/parking_repo.dart';
 import 'package:security_project/utils/api/dio_helper.dart';
 import 'package:security_project/utils/constants/api_constants.dart';
@@ -59,5 +61,17 @@ class ParkingRepoImpl implements ParkingRepo{
           'iv': iv
         },
     ).then((response) => ProcessPaymentModel.fromJson(response));
+  }
+
+  @override
+  Future<CertificateModel> generateCertificate(String publicKey) async{
+    final dioHelper = TDioHelper();
+    return await dioHelper.post(TApiConstants.generateCertificate, {'public_key': publicKey}, token: token).then((response) => CertificateModel.fromJson(response));
+  }
+
+  @override
+  Future<TestCertificateModel> testCertificate() async{
+    final dioHelper = TDioHelper();
+    return await dioHelper.get(TApiConstants.testCertificate, token: token).then((response) => TestCertificateModel.fromJson(response));
   }
 }

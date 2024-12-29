@@ -8,5 +8,6 @@ class TApiConstants {
   static const String publicKey = "public-key";
   static const String calculate = "calculate-cost";
   static const String processPayment = "process-payment";
-
+  static const String generateCertificate = 'generate-certificate';
+  static const String testCertificate = 'test-certificate';
 }

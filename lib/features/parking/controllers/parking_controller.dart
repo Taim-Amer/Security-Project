@@ -22,11 +22,13 @@ class ParkingController extends GetxController {
   Rx<CertificateModel> certificateModel = CertificateModel().obs;
   Rx<TestCertificateModel> testCertificateModel = TestCertificateModel().obs;
 
-  Future<void> reverseParking(Map<String, String> parkingData) async {
+  Future<void> bookParkingSpot(String slot, String time) async {
     try {
-      reverseParkingModel.value = await _repo.reverseParking(parkingData);
-    } catch (error) {
-      showSnackBar(TranslationKey.kErrorMessage, AlertState.error);
+      final parkingData = {'parking_slot': slot, 'time': time};
+      final response = await ParkingRepoImpl.instance.reverseParking(parkingData);
+      reverseParkingModel.value = response;
+    } catch (e) {
+      showSnackBar("Error booking parking spot", AlertState.error);
     }
   }
 

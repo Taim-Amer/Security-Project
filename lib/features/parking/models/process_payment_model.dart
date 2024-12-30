@@ -1,11 +1,11 @@
 class ProcessPaymentModel {
-  final bool status;
-  final String message;
+  final bool? status;
+  final String? message;
   final PaymentData? data;
 
   ProcessPaymentModel({
-    required this.status,
-    required this.message,
+    this.status,
+    this.message,
     this.data,
   });
 

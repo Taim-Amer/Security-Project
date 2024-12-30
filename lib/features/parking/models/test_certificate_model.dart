@@ -1,8 +1,8 @@
 class TestCertificateModel {
-  final bool status;
-  final String message;
+  final bool? status;
+  final String? message;
 
-  TestCertificateModel({required this.status, required this.message});
+  TestCertificateModel({this.status, this.message});
 
   factory TestCertificateModel.fromJson(Map<String, dynamic> json) {
     return TestCertificateModel(

@@ -1,7 +1,7 @@
 class CertificateModel {
-  final String certificate;
+  final String? certificate;
 
-  CertificateModel({required this.certificate});
+  CertificateModel({this.certificate});
 
   factory CertificateModel.fromJson(Map<String, dynamic> json) {
     return CertificateModel(certificate: json['certificate']);

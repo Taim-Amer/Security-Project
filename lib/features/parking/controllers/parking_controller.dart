@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:get/get.dart';
+import 'package:pointycastle/asymmetric/api.dart' as pointycastle;
 import 'package:security_project/common/widgets/alerts/snackbar.dart';
 import 'package:security_project/features/parking/models/calculate_cost_model.dart';
 import 'package:security_project/features/parking/models/certificate_model.dart';
@@ -9,6 +12,8 @@ import 'package:security_project/features/parking/models/test_certificate_model.
 import 'package:security_project/features/parking/repository/parking_repo_impl.dart';
 import 'package:security_project/localization/keys.dart';
 import 'package:security_project/utils/constants/enums.dart';
+import 'package:security_project/utils/keys/key_generator.dart';
+import 'package:security_project/utils/storage/cache_helper.dart';
 
 class ParkingController extends GetxController {
   static ParkingController get instance => Get.find();
@@ -18,11 +23,12 @@ class ParkingController extends GetxController {
   Rx<ReverseParkingModel> reverseParkingModel = ReverseParkingModel().obs;
   Rx<PublicKeyModel> publicKeyModel = PublicKeyModel().obs;
   Rx<CalculateCostModel> calculateCostModel = CalculateCostModel().obs;
-  Rx<ProcessPaymentModel> processPaymentModel = ProcessPaymentModel().obs;
+  // Rx<ProcessPaymentModel> processPaymentModel = ProcessPaymentModel().obs;
   Rx<CertificateModel> certificateModel = CertificateModel().obs;
   Rx<TestCertificateModel> testCertificateModel = TestCertificateModel().obs;
+  Rx<ProcessPaymentModel> paymentResult = ProcessPaymentModel().obs;
 
-  Future<void> bookParkingSpot(String slot, String time) async {
+  Future<void> reverseParking(String slot, String time) async {
     try {
       final parkingData = {'parking_slot': slot, 'time': time};
       final response = await ParkingRepoImpl.instance.reverseParking(parkingData);
@@ -48,20 +54,53 @@ class ParkingController extends GetxController {
     }
   }
 
-  Future<void> processPayment({
-    required String encryptedSessionKey,
-    required String encryptedPaymentData,
-    required String iv,
-  }) async {
+  Future<void> processPayment(Map<String, dynamic> paymentData) async {
+    final keyPair = KeyPairGenerator.generateKeyPair();
+    TCacheHelper.saveData(key: "clientPublicKey", value: keyPair.publicKey.toString());
+    TCacheHelper.saveData(key: "clientPrivateKey", value: keyPair.privateKey.toString());
+    final serverPublicKey = TCacheHelper.getData(key: 'serverPublicKey');
     try {
-      processPaymentModel.value = await _repo.processPayment(
+      final sessionKey = KeyPairGenerator.generateSessionKey();
+      final encryptedSessionKey = encryptSessionKey(sessionKey, serverPublicKey);
+      final encryptedPaymentData = encryptPaymentData(jsonEncode(paymentData), sessionKey);
+
+      final response = await _repo.processPayment(
         encryptedSessionKey: encryptedSessionKey,
-        encryptedPaymentData: encryptedPaymentData,
-        iv: iv,
+        encryptedPaymentData: encryptedPaymentData['encryptedData']!,
+        iv: encryptedPaymentData['iv']!,
       );
-    } catch (error) {
-      showSnackBar(TranslationKey.kErrorMessage, AlertState.error);
+      paymentResult.value = response;
+    } catch (e) {
+      showSnackBar("Payment failed", AlertState.error);
     }
+  }
+
+  Future<void> performHandshaking() async {
+    try {
+      await _repo.getPublicKey().then((response) => TCacheHelper.saveData(key: 'serverPublicKey', value: response.publicKey));
+      // await _repo.sendClientPublicKey(TCacheHelper.getData(key: "clientPublicKey"));
+    } catch (e) {
+      showSnackBar("Handshaking failed", AlertState.error);
+    }
+  }
+
+  String encryptSessionKey(String sessionKey, String serverPublicKey) {
+    final parser = encrypt.RSAKeyParser();
+    final publicKey = parser.parse(serverPublicKey) as pointycastle.RSAPublicKey;
+    final encrypter = encrypt.Encrypter(encrypt.RSA(publicKey: publicKey));
+
+    return encrypter.encrypt(sessionKey).base64;
+  }
+
+  Map<String, String> encryptPaymentData(String paymentData, String sessionKey) {
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(encrypt.Key.fromUtf8(sessionKey), mode: encrypt.AESMode.cbc));
+    final encryptedData = encrypter.encrypt(paymentData, iv: iv);
+
+    return {
+      'encryptedData': encryptedData.base64,
+      'iv': iv.base64,
+    };
   }
 
   Future<void> generateCertificate(String publicKey) async {

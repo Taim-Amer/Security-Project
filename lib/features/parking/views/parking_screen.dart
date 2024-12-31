@@ -35,7 +35,7 @@ class ParkingPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                await parkingController.bookParkingSpot('A12', '2024-12-27 10:00');
+                await parkingController.reverseParking('A12', '2024-12-27 10:00');
               },
               child: Text("Book Parking Spot"),
             ),

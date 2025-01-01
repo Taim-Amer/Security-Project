@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:get/get.dart';
@@ -23,7 +25,6 @@ class ParkingController extends GetxController {
   Rx<ReverseParkingModel> reverseParkingModel = ReverseParkingModel().obs;
   Rx<PublicKeyModel> publicKeyModel = PublicKeyModel().obs;
   Rx<CalculateCostModel> calculateCostModel = CalculateCostModel().obs;
-  // Rx<ProcessPaymentModel> processPaymentModel = ProcessPaymentModel().obs;
   Rx<CertificateModel> certificateModel = CertificateModel().obs;
   Rx<TestCertificateModel> testCertificateModel = TestCertificateModel().obs;
   Rx<ProcessPaymentModel> paymentResult = ProcessPaymentModel().obs;
@@ -35,14 +36,6 @@ class ParkingController extends GetxController {
       reverseParkingModel.value = response;
     } catch (e) {
       showSnackBar("Error booking parking spot", AlertState.error);
-    }
-  }
-
-  Future<void> getPublicKey() async {
-    try {
-      publicKeyModel.value = await _repo.getPublicKey();
-    } catch (error) {
-      showSnackBar(TranslationKey.kErrorMessage, AlertState.error);
     }
   }
 
@@ -103,19 +96,28 @@ class ParkingController extends GetxController {
     };
   }
 
-  Future<void> generateCertificate(String publicKey) async {
-    try {
-      certificateModel.value = await _repo.generateCertificate(publicKey);
-    } catch (error) {
-      showSnackBar(TranslationKey.kErrorMessage, AlertState.error);
+  Future<void> generateCertificate() async {
+    final clientPublicKey = TCacheHelper.getData(key: "clientPublicKey");
+    if (clientPublicKey != null) {
+      await _repo.generateCertificate(clientPublicKey);
+      showSnackBar("Certificate generated successfully!", AlertState.warning);
+    } else {
+      showSnackBar("Public key not found.", AlertState.error);
     }
   }
 
-  Future<void> testCertificate() async {
+  Future<void> validateCertificate() async {
     try {
-      testCertificateModel.value = await _repo.testCertificate();
+      await _repo.testCertificate();
+      showSnackBar("Certificate is valid.", AlertState.success);
     } catch (error) {
-      showSnackBar(TranslationKey.kErrorMessage, AlertState.error);
+      showSnackBar("Certificate validation failed", AlertState.error);
     }
   }
+
+  Future<void> performCertificate() async {
+    await generateCertificate();
+    await validateCertificate();
+  }
+
 }

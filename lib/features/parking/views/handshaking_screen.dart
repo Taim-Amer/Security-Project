@@ -4,6 +4,7 @@ import 'package:security_project/features/parking/controllers/parking_controller
 import 'package:security_project/features/parking/views/payment_screen.dart';
 
 class HandshakingScreen extends StatelessWidget {
+  HandshakingScreen({super.key});
   final parkingController = ParkingController.instance;
 
   @override

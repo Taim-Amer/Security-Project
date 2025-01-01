@@ -1,3 +1,4 @@
+// ignore_for_file: depend_on_referenced_packages
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -17,8 +18,8 @@ class KeyPairGenerator {
 
   static String generateSessionKey() {
     final random = Random.secure();
-    final key = List<int>.generate(32, (_) => random.nextInt(256)); // 32 بايت
-    return base64UrlEncode(key); // تحويل المفتاح إلى صيغة Base64
+    final key = List<int>.generate(32, (_) => random.nextInt(256));
+    return base64UrlEncode(key);
   }
 
 }

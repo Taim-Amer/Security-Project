@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:security_project/features/parking/controllers/parking_controller.dart';
 
 class PaymentConfirmationScreen extends StatelessWidget {
+  PaymentConfirmationScreen({super.key});
+
   final parkingController = ParkingController.instance;
 
   @override

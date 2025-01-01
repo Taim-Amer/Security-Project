@@ -41,11 +41,9 @@ class ParkingPage extends StatelessWidget {
             ),
             Obx(() {
               final model = parkingController.reverseParkingModel.value;
-              return model.status != null
-                  ? Text(
+              return model.status != null ? Text(
                 "Booking Status: ${model.status! ? 'Confirmed' : 'Failed'}",
-              )
-                  : SizedBox();
+              ) : SizedBox();
             }),
           ],
         ),

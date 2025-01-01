@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:security_project/features/authentication/email_register/presentation/manager/register_cubit/register_email_cubit.dart';
+import 'package:security_project/features/authentication/controllers/signup_controller.dart';
 import 'package:security_project/utils/constants/sizes.dart';
-import 'package:security_project/utils/constants/text_strings.dart';
 import 'package:security_project/utils/validators/validation.dart';
 
 class TRegisterForm extends StatelessWidget {
@@ -12,7 +10,7 @@ class TRegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: context.read<RegisterEmailCubit>().registerFormKey,
+      key: SignupController.instance.signupFormState,
       child: Column(
         children: [
           Row(
@@ -20,20 +18,20 @@ class TRegisterForm extends StatelessWidget {
               //First Name
               Expanded(
                 child: TextFormField(
-                  controller: context.read<RegisterEmailCubit>().firstNameController,
-                  validator: (value) => TValidator.validateEmptyText("First Name", value),
+                  controller: SignupController.instance.carNumberController,
+                  validator: (value) => TValidator.validateEmptyText("Car Number", value),
                   expands: false,
-                  decoration: const InputDecoration(labelText: TTexts.firstName, prefixIcon: Icon(Iconsax.user)),
+                  decoration: const InputDecoration(labelText: "Car Number", prefixIcon: Icon(Iconsax.car)),
                 ),
               ),
               const SizedBox(width: TSizes.spaceBtwInputField,),
               //Last Name
               Expanded(
                 child: TextFormField(
-                  controller: context.read<RegisterEmailCubit>().lastNameController,
-                  validator: (value) => TValidator.validateEmptyText("Last Name", value),
+                  controller: SignupController.instance.typeController,
+                  validator: (value) => TValidator.validateEmptyText("Type", value),
                   expands: false,
-                  decoration: const InputDecoration(labelText: TTexts.lastName, prefixIcon: Icon(Iconsax.user)),
+                  decoration: const InputDecoration(labelText: "Type", prefixIcon: Icon(Iconsax.category)),
                 ),
               ),
             ],
@@ -42,43 +40,30 @@ class TRegisterForm extends StatelessWidget {
           const SizedBox(height: TSizes.spaceBtwInputField,),
           //Username
           TextFormField(
-            controller: context.read<RegisterEmailCubit>().usernameController,
+            controller: SignupController.instance.nameController,
             validator: (value) => TValidator.validateEmptyText("Username", value),
             expands: false,
-            decoration: const InputDecoration(labelText: TTexts.username, prefixIcon: Icon(Iconsax.user_edit)),
-          ),
-
-          const SizedBox(height: TSizes.spaceBtwInputField,),
-          //Email
-          TextFormField(
-            controller: context.read<RegisterEmailCubit>().emailController,
-            validator: (value) => TValidator.validateEmail(value),
-            expands: false,
-            decoration: const InputDecoration(labelText: TTexts.email, prefixIcon: Icon(Iconsax.direct)),
+            decoration: const InputDecoration(labelText: "Username", prefixIcon: Icon(Iconsax.user_edit)),
           ),
 
           const SizedBox(height: TSizes.spaceBtwInputField,),
           //Phone Number
           TextFormField(
-            controller: context.read<RegisterEmailCubit>().phoneNumberController,
+            controller: SignupController.instance.phoneNumberController,
             validator: (value) => TValidator.validatePhoneNumber(value),
             expands: false,
-            decoration: const InputDecoration(labelText: TTexts.phoneNo, prefixIcon: Icon(Iconsax.call)),
+            decoration: const InputDecoration(labelText: "Phone Number", prefixIcon: Icon(Iconsax.call)),
           ),
 
           const SizedBox(height: TSizes.spaceBtwInputField,),
           //Password
           TextFormField(
-            controller: context.read<RegisterEmailCubit>().passwordController,
+            controller: SignupController.instance.passwordController,
             validator: (value) => TValidator.validatePassword(value),
-            obscureText: context.read<RegisterEmailCubit>().hidePassword,
-            decoration: InputDecoration(
-                labelText: TTexts.password,
-                prefixIcon: const Icon(Iconsax.password_check),
-                suffixIcon: IconButton(
-                  onPressed: () => context.read<RegisterEmailCubit>().hidePassword = !context.read<RegisterEmailCubit>().hidePassword,
-                  icon: Icon(context.read<RegisterEmailCubit>().hidePassword ? Iconsax.eye_slash : Iconsax.eye),
-                )
+            obscureText: true,
+            decoration: const InputDecoration(
+                labelText: "Password",
+                prefixIcon: Icon(Iconsax.password_check),
             ),
           ),
 
@@ -89,8 +74,8 @@ class TRegisterForm extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => context.read<RegisterEmailCubit>().registerWithEmail(),
-              child: const Text(TTexts.createAccount),
+              onPressed: () => SignupController.instance.signup(),
+              child: const Text("CreateAccount"),
             ),
           ),
         ],

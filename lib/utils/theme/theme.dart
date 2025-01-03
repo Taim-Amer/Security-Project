@@ -32,6 +32,11 @@ class TAppTheme {
     outlinedButtonTheme: TOutLinedButtonTheme.lightOutLinedButtonTheme,
     elevatedButtonTheme: TElevatedButtonTheme.lightElevatedButtonTheme,
     inputDecorationTheme: TTextFieldTheme.lightInputDecorationTheme,
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: TColors.primary,
+      selectionColor: Colors.transparent,
+      selectionHandleColor: TColors.primary
+    ),
     radioTheme: TRadioTheme.lightRadioTheme,
     dividerColor: const Color(0xFFD5D5D5),
   );
@@ -51,6 +56,11 @@ class TAppTheme {
     checkboxTheme: TCheckboxTheme.darkCheckboxTheme,
     bottomSheetTheme: TBottomSheetTheme.darkBottomSheetTheme,
     outlinedButtonTheme: TOutLinedButtonTheme.darkOutLinedButtonTheme,
+    textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: TColors.primary,
+        selectionColor: Colors.transparent,
+        selectionHandleColor: TColors.primary,
+    ),
     elevatedButtonTheme: TElevatedButtonTheme.darkElevatedButtonTheme,
     inputDecorationTheme: TTextFieldTheme.darkInputDecorationTheme,
     radioTheme: TRadioTheme.darkRadioTheme,

@@ -1,5 +1,4 @@
 // ignore_for_file: depend_on_referenced_packages
-
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:get/get.dart';
@@ -119,5 +118,4 @@ class ParkingController extends GetxController {
     await generateCertificate();
     await validateCertificate();
   }
-
 }

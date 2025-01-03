@@ -59,7 +59,6 @@ dependencies:
   # Files
   image_picker: ^1.1.2
   file_picker: ^8.1.4
-  flutter_file_downloader: ^2.0.0
   encrypt: ^5.0.3
 
 

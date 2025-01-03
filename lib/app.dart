@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:security_project/bindings/signup_binding.dart';
+import 'package:security_project/dependencies/signup_binding.dart';
+import 'package:security_project/localization/translations.dart';
 import 'package:security_project/utils/helpers/helper_functions.dart';
 import 'package:security_project/utils/router/app_router.dart';
 import 'package:security_project/utils/storage/cache_helper.dart';
@@ -24,8 +25,8 @@ class App extends StatelessWidget {
         darkTheme: TAppTheme.darkTheme,
         initialRoute: AppRoutes.signup,
         getPages: AppRoutes.routes,
-        // translations: TAppTranslations(),
-        // locale: Locale(language ?? 'en'),
+        translations: TAppTranslations(),
+        locale: const Locale('en'),
         // fallbackLocale: const Locale('en'),
         initialBinding: SignupBinding(),
       ),

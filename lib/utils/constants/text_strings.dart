@@ -195,7 +195,7 @@ class TEnglishTexts {
 
   // Validation
   static String get phoneValidation => 'Phone number is required';
-  static String get emptyValidation => 'You must Enter';
+  static String get emptyValidation => 'Must Enter';
   static String get emailValidation => 'The Email is Required';
   static String get emailInvalid => "The Email Address is Invalid";
 

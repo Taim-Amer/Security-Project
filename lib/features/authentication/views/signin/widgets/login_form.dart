@@ -6,8 +6,8 @@ import 'package:security_project/utils/constants/sizes.dart';
 import 'package:security_project/utils/router/app_router.dart';
 import 'package:security_project/utils/validators/validation.dart';
 
-class TLoginForm extends StatelessWidget {
-  const TLoginForm({super.key});
+class LoginForm extends StatelessWidget {
+  const LoginForm({super.key});
 
   @override
   Widget build(BuildContext context) {

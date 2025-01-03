@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:security_project/bindings/signin_binding.dart';
+import 'package:security_project/dependencies/signin_binding.dart';
 import 'package:security_project/utils/router/app_router.dart';
 import 'package:security_project/utils/storage/cache_helper.dart';
 

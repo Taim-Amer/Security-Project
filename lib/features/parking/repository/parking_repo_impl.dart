@@ -10,6 +10,7 @@ import 'package:security_project/features/parking/models/test_certificate_model.
 import 'package:security_project/features/parking/repository/parking_repo.dart';
 import 'package:security_project/utils/api/dio_helper.dart';
 import 'package:security_project/utils/constants/api_constants.dart';
+import 'package:security_project/utils/logging/logger.dart';
 import 'package:security_project/utils/storage/cache_helper.dart';
 
 class ParkingRepoImpl implements ParkingRepo{
@@ -26,8 +27,12 @@ class ParkingRepoImpl implements ParkingRepo{
     final key = Key.fromBase64(sessionKey!);
     final encrypter = Encrypter(AES(key, mode: AESMode.cbc));
     final encryptedData = encrypter.encrypt(jsonEncode(parkingData), iv: iv);
-    
-    return dioHelper.post(TApiConstants.reverseParking, token: token,{
+
+    print("Session Key: $sessionKey");
+    print("IV: ${base64Encode(iv.bytes)}");
+    print("Encrypted Data: ${encryptedData.base64}");
+
+    return dioHelper.postWithSessionKey(TApiConstants.reverseParking, token: token,{
       'encryptedData': encryptedData.base64,
       'iv': base64Encode(iv.bytes),
       //'parking_slot': 'A12',

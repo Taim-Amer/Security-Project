@@ -1,5 +1,5 @@
 class TApiConstants {
-  static const String baseUrl = 'https://sourcesafe.tahamove.com/api/';
+  static const String baseUrl = 'http://192.168.53.1:8000/api/';
 
   static const String signin = "login";
   static const String signup = "register";

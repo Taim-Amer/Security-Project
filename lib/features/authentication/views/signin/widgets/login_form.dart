@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:security_project/app.dart';
 import 'package:security_project/features/authentication/controllers/signin_controller.dart';
 import 'package:security_project/utils/constants/sizes.dart';
 import 'package:security_project/utils/router/app_router.dart';
@@ -18,11 +20,11 @@ class LoginForm extends StatelessWidget {
         child: Column(
           children: [
             TextFormField(
-              controller: SigninController.instance.emailController,
-              validator: (value) => TValidator.validateEmail(value),
+              controller: SigninController.instance.nameController,
+              validator: (value) => TValidator.validateEmptyText(value, 'Username'),
               decoration: const InputDecoration(
-                prefixIcon: Icon(Iconsax.direct_right),
-                labelText: "Email Address",
+                prefixIcon: Icon(Iconsax.user),
+                hintText: "Username",
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwInputField),
@@ -31,15 +33,15 @@ class LoginForm extends StatelessWidget {
               validator: (value) => TValidator.validatePassword(value),
               decoration: const InputDecoration(
                 prefixIcon: Icon(Iconsax.password_check),
-                labelText: "Password",
+                hintText: "Password",
               ),
             ),
-            const SizedBox(height: TSizes.spaceBtwSections),
-
+            const SizedBox(height: TSizes.spaceBtwInputField),
             Column(
               children: [
                 SizedBox(
                   width: double.infinity,
+                  height: 50.h,
                   child: ElevatedButton(
                     onPressed: () => SigninController.instance.signin(),
                     child: const Text("Login"),
@@ -48,7 +50,7 @@ class LoginForm extends StatelessWidget {
                 const SizedBox(height: TSizes.spaceBtwItems),
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton(
+                  child: TextButton(
                     onPressed: () => Get.toNamed(AppRoutes.signup),
                     child: const Text("Create Account"),
                   ),

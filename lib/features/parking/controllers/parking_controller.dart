@@ -1,9 +1,12 @@
 // ignore_for_file: depend_on_referenced_packages
+
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pointycastle/asymmetric/api.dart' as pointycastle;
 import 'package:security_project/common/widgets/alerts/snackbar.dart';
+import 'package:security_project/features/authentication/controllers/session_key_controller.dart';
 import 'package:security_project/features/parking/models/calculate_cost_model.dart';
 import 'package:security_project/features/parking/models/certificate_model.dart';
 import 'package:security_project/features/parking/models/process_payment_model.dart';
@@ -14,12 +17,11 @@ import 'package:security_project/features/parking/repository/parking_repo_impl.d
 import 'package:security_project/localization/keys.dart';
 import 'package:security_project/utils/constants/enums.dart';
 import 'package:security_project/utils/keys/key_generator.dart';
+import 'package:security_project/utils/logging/logger.dart';
 import 'package:security_project/utils/storage/cache_helper.dart';
 
 class ParkingController extends GetxController {
   static ParkingController get instance => Get.find();
-
-  final ParkingRepoImpl _repo = ParkingRepoImpl.instance;
 
   Rx<ReverseParkingModel> reverseParkingModel = ReverseParkingModel().obs;
   Rx<PublicKeyModel> publicKeyModel = PublicKeyModel().obs;
@@ -28,19 +30,23 @@ class ParkingController extends GetxController {
   Rx<TestCertificateModel> testCertificateModel = TestCertificateModel().obs;
   Rx<ProcessPaymentModel> paymentResult = ProcessPaymentModel().obs;
 
-  Future<void> reverseParking(String slot, String time) async {
+  final timeController = TextEditingController();
+  final slotController = TextEditingController();
+
+  Future<void> reverseParking() async {
+    await SessionKeyController.instance.getSessionKey();
     try {
-      final parkingData = {'parking_slot': slot, 'time': time};
-      final response = await ParkingRepoImpl.instance.reverseParking(parkingData);
-      reverseParkingModel.value = response;
+      final parkingData = {'parking_slot': slotController.text.toString(), 'time': timeController.text.toString()};
+      reverseParkingModel.value = await ParkingRepoImpl.instance.reverseParking(parkingData);
     } catch (e) {
+      TLoggerHelper.warning(e.toString());
       showSnackBar("Error booking parking spot", AlertState.error);
     }
   }
 
   Future<void> calculateCost(int garageID) async {
     try {
-      calculateCostModel.value = await _repo.calculateCost(garageID: garageID);
+      calculateCostModel.value = await ParkingRepoImpl.instance.calculateCost(garageID: garageID);
     } catch (error) {
       showSnackBar(TranslationKey.kErrorMessage, AlertState.error);
     }
@@ -56,7 +62,7 @@ class ParkingController extends GetxController {
       final encryptedSessionKey = encryptSessionKey(sessionKey, serverPublicKey);
       final encryptedPaymentData = encryptPaymentData(jsonEncode(paymentData), sessionKey);
 
-      final response = await _repo.processPayment(
+      final response = await ParkingRepoImpl.instance.processPayment(
         encryptedSessionKey: encryptedSessionKey,
         encryptedPaymentData: encryptedPaymentData['encryptedData']!,
         iv: encryptedPaymentData['iv']!,
@@ -69,7 +75,7 @@ class ParkingController extends GetxController {
 
   Future<void> performHandshaking() async {
     try {
-      await _repo.getPublicKey().then((response) => TCacheHelper.saveData(key: 'serverPublicKey', value: response.publicKey));
+      await ParkingRepoImpl.instance.getPublicKey().then((response) => TCacheHelper.saveData(key: 'serverPublicKey', value: response.publicKey));
       // await _repo.sendClientPublicKey(TCacheHelper.getData(key: "clientPublicKey"));
     } catch (e) {
       showSnackBar("Handshaking failed", AlertState.error);
@@ -98,7 +104,7 @@ class ParkingController extends GetxController {
   Future<void> generateCertificate() async {
     final clientPublicKey = TCacheHelper.getData(key: "clientPublicKey");
     if (clientPublicKey != null) {
-      await _repo.generateCertificate(clientPublicKey);
+      await ParkingRepoImpl.instance.generateCertificate(clientPublicKey);
       showSnackBar("Certificate generated successfully!", AlertState.warning);
     } else {
       showSnackBar("Public key not found.", AlertState.error);
@@ -107,7 +113,7 @@ class ParkingController extends GetxController {
 
   Future<void> validateCertificate() async {
     try {
-      await _repo.testCertificate();
+      await ParkingRepoImpl.instance.testCertificate();
       showSnackBar("Certificate is valid.", AlertState.success);
     } catch (error) {
       showSnackBar("Certificate validation failed", AlertState.error);

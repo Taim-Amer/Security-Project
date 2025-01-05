@@ -47,7 +47,7 @@ class SignupController extends GetxController{
         }
       } catch (error) {
         updateStatus(value: RequestState.error);
-        showSnackBar(TranslationKey.kErrorMessage, AlertState.success);
+        showSnackBar(TranslationKey.kErrorMessage, AlertState.error);
       }
     }
   }

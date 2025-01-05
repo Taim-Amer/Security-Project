@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:security_project/utils/constants/api_constants.dart';
+import 'package:security_project/utils/storage/cache_helper.dart';
 
 class TDioHelper {
   static final TDioHelper _instance = TDioHelper._internal();
@@ -38,6 +39,18 @@ class TDioHelper {
       'Content-Type': 'application/json',
       'lang': lang,
       'Authorization': token != null ? 'Bearer $token' : '',
+    };
+
+    final response = await dio.post(endPoint, data: data);
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> postWithSessionKey(String endPoint, Map<String, dynamic> data, {String lang = 'en', String? token}) async {
+    dio.options.headers = {
+      'Content-Type': 'application/json',
+      'lang': lang,
+      'Authorization': token != null ? 'Bearer $token' : '',
+      'Session-Key' : TCacheHelper.getData(key: "sessionKey")
     };
 
     final response = await dio.post(endPoint, data: data);

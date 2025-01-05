@@ -70,7 +70,7 @@ class RegisterForm extends StatelessWidget {
                 height: 50.h,
                 child: ElevatedButton(
                   onPressed: () => SignupController.instance.signup(),
-                  child: const Text("CreateAccount"),
+                  child: const Text("Create Account"),
                 ),
               ),
           
